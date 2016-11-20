@@ -317,7 +317,11 @@
       
         
           
-            <p><code>fdsfsdlfjsdlfjslfjlsdjfsldjfs</code></p>
+            <ol>
+<li>不论一个sql中涉及到多少表,每次都用两个表(结果集)操作,得到新的结果后,再和下一个(结果集)操作.</li>
+<li>避免在select f1,(select f2 from tableB)…from tableA 这样得到字段列.直接用tableA和tableB关联得到A.f1,B.f2就可以了.</li>
+<li>避免隐含的类型转换。 如：</li>
+</ol>
 
           
         
