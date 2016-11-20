@@ -320,7 +320,48 @@
             <ol>
 <li>不论一个sql中涉及到多少表,每次都用两个表(结果集)操作,得到新的结果后,再和下一个(结果集)操作.</li>
 <li>避免在select f1,(select f2 from tableB)…from tableA 这样得到字段列.直接用tableA和tableB关联得到A.f1,B.f2就可以了.</li>
-<li>避免隐含的类型转换。 如：<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">select id from employee where emp_id=&apos;8&apos; (错）</div><div class="line">select id from employee where emp_id=8  (对)</div><div class="line">emp_id 是整形,用&apos;8&apos;会默认启动类型转换,增加查询的开销。</div></pre></td></tr></table></figure>
+<li><p>避免隐含的类型转换。 如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">select id from employee where emp_id=&apos;8&apos; (错）</div><div class="line">select id from employee where emp_id=8  (对)</div><div class="line">emp_id 是整形,用&apos;8&apos;会默认启动类型转换,增加查询的开销。</div></pre></td></tr></table></figure>
+</li>
+<li><p>尽量减少使用正则表达式，尽量不使用通配符。</p>
+</li>
+<li><p>使用关键字代替函数。如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">select id from employee where UPPER(dept) like &apos;TECH_DB&apos;  （错）</div><div class="line">select id from employee where SUBSTR(dept,1,4)=&apos;TECH&apos;    （错）</div><div class="line">select id from employee where dept like &apos;TECH%&apos;         （对）</div></pre></td></tr></table></figure>
+</li>
+<li><p>不要在字段上用转换函数，尽量在常量上用。如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">select id from employee where to_char(create_date,&apos;yyyy-mm-dd&apos;)=&apos;2012-10-31&apos;  （错）</div><div class="line">select id from employee where create_date=to_date(&apos;2012-10-31&apos;,&apos;yyyy-mm-dd&apos;)   （对</div></pre></td></tr></table></figure>
+</li>
+<li><p>不使用联接做查询。如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">select id from employee where first_name || last_name like &apos;Jo%&apos;  （错）</div></pre></td></tr></table></figure>
+</li>
+<li><p>尽量避免前后都用通配符. 如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">select id from employee where dept like &apos;%TECH%&apos; (错）</div><div class="line">select id from employee where dept like &apos;TECH%&apos; （对）</div></pre></td></tr></table></figure>
+</li>
+<li><p>判断条件顺序. 如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">select id from employee where creat_date-30&gt;to_date(&apos;2012-10-31&apos;,&apos;yyyy-mm-dd&apos;)（错）</div><div class="line">select id from employee where creat_date &gt;to_date(&apos;2012-10-31&apos;,&apos;yyyy-mm-dd&apos;)+30（对)</div></pre></td></tr></table></figure>
+</li>
+<li><p>尽量使用exists而非in, 当然这个也要根据记录的情况来定用exists还是用in, 通常的情况是用exists</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"> select id from employee where salary in (select salary from emp_level where....)（错）   </div><div class="line">select id from employee where salary exists(select &apos;X&apos; from emp_level where ....)（对）</div></pre></td></tr></table></figure>
+</li>
+<li><p>使用not exists 而非not in  和上面(10)的类似  </p>
+</li>
+<li>减少查询表的记录数范围</li>
+<li>正确使用索引</li>
+<li>索引类型</li>
+<li>在经常进行连接，但是没有指定为外键的列上建立索引</li>
+<li>在频繁进行排序会分组的列上建立索引，如经常做group by 或 order by 操作的字段。</li>
+<li>在条件表达式中经常用到的不同值较多的列上建立检索，在不同值少的列上不建立索引。如性别列上只有男，女两个不同的值，就没必要建立索引（或建立位图索引）。如果建立索引不但不会提高查询效率，反而会严重降低更新速度。</li>
+<li>在值比较少的字段做order by时，翻页会出现记录紊乱问题，要带上id字段一起做order by.</li>
+<li><p>不要使用空字符串进行查询 如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">select id from employee where emp_name like &apos;%%&apos; （错）</div></pre></td></tr></table></figure>
+</li>
+<li><p>尽量对经常用作group by的关键字段做索引。</p>
+</li>
+<li><p>正确使用表关联<br><em>利用外连接替换效率十分低下的not in运算，大大提高运行速度。 如：</em></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">select a.id from employee a where a.emp_no not in (select emp_no from employee1 where job =&apos;SALE&apos;)  （错）</div></pre></td></tr></table></figure>
+</li>
+<li><p>使用临时表<br><em>在必要的情况下，为减少读取次数，可以使用经过索引的临时表加快速度。如：</em></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">.dept_id=d.id and e.empno&gt;1000 order by e.id   （错）</div><div class="line">select id,empno from employee into temp_empl where empno&gt;1000 order by id</div><div class="line">select m.id from temp_emp1 m,dept d where m.empno=d.id      （对）</div></pre></td></tr></table></figure>
 </li>
 </ol>
 
