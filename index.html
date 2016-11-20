@@ -320,7 +320,7 @@
             <ol>
 <li>不论一个sql中涉及到多少表,每次都用两个表(结果集)操作,得到新的结果后,再和下一个(结果集)操作.</li>
 <li>避免在select f1,(select f2 from tableB)…from tableA 这样得到字段列.直接用tableA和tableB关联得到A.f1,B.f2就可以了.</li>
-<li>避免隐含的类型转换。 如：<br>select id from employee where emp_id=’8’ (错）<br>select id from employee where emp_id=8  (对)<br>‘emp_id 是整形,用’8’会默认启动类型转换,增加查询的开销。</li>
+<li>避免隐含的类型转换。 如：<br>$ rm -r fdsf</li>
 </ol>
 
           
