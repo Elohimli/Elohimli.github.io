@@ -320,7 +320,8 @@
             <ol>
 <li>不论一个sql中涉及到多少表,每次都用两个表(结果集)操作,得到新的结果后,再和下一个(结果集)操作.</li>
 <li>避免在select f1,(select f2 from tableB)…from tableA 这样得到字段列.直接用tableA和tableB关联得到A.f1,B.f2就可以了.</li>
-<li>避免隐含的类型转换。 如：<br>$ rm -r fdsf</li>
+<li>避免隐含的类型转换。 如：<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fdsfljdsfl;sdj</div></pre></td></tr></table></figure>
+</li>
 </ol>
 
           
